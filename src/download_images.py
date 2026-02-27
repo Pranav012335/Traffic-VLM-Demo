@@ -8,7 +8,7 @@ urls = [
 for i, url in enumerate(urls):
     response = requests.get(url, headers={'User-Agent': 'Mozilla/5.0'})
     if response.status_code == 200:
-        filepath = rf'c:\Users\ASUS\OneDrive\Desktop\FYP 2.0\traffic_images\traffic_sample_{i+1}.jpg'
+        filepath = rf'c:\Users\ASUS\OneDrive\Desktop\FYP 2.0\data\inputs\traffic_sample_{i+1}.jpg'
         with open(filepath, 'wb') as f:
             f.write(response.content)
         print(f"Downloaded {filepath}")

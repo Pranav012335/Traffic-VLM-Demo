@@ -19,13 +19,18 @@ def process_images(model, processor, images_dir):
         print(f"Directory {images_dir} does not exist. Please create it and add images.")
         return
 
-    valid_extensions = {".jpg", ".jpeg", ".png", ".bmp", ".webp"}
-    image_files = [f for f in os.listdir(images_dir) if os.path.splitext(f)[1].lower() in valid_extensions]
+    import mimetypes
+    image_files = []
+    for f in os.listdir(images_dir):
+        if os.path.isfile(os.path.join(images_dir, f)):
+            mime_type, _ = mimetypes.guess_type(f)
+            if mime_type and mime_type.startswith('image/'):
+                image_files.append(f)
 
     print(f"Found {len(image_files)} images in {images_dir}. Processing...")
     
     # Create an output directory
-    output_dir = os.path.join(os.path.dirname(images_dir), "traffic_vlm_outputs")
+    output_dir = os.path.join(os.path.dirname(images_dir), "outputs")
     os.makedirs(output_dir, exist_ok=True)
     print(f"Outputs will be saved to: {output_dir}")
 
@@ -94,7 +99,7 @@ def process_images(model, processor, images_dir):
             
             # Move the processed image to a completed folder
             import shutil
-            completed_dir = os.path.join(os.path.dirname(images_dir), "completed_images")
+            completed_dir = os.path.join(os.path.dirname(images_dir), "completed")
             os.makedirs(completed_dir, exist_ok=True)
             shutil.move(image_path, os.path.join(completed_dir, image_file))
             print(f"Moved `{image_file}` to: {completed_dir}")
@@ -103,8 +108,10 @@ def process_images(model, processor, images_dir):
             print(f"Error processing {image_file}: {e}")
 
 if __name__ == "__main__":
-    # Ensure a directory named 'traffic_images' exists in the current working directory
-    target_dir = os.path.join(os.getcwd(), "traffic_images")
+    # Point to the data/inputs directory using robust relative paths
+    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    target_dir = os.path.join(base_dir, "data", "inputs")
+    
     if not os.path.exists(target_dir):
         os.makedirs(target_dir)
         print(f"Created directory: {target_dir}")
