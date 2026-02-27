@@ -1,0 +1,5 @@
+__pycache__/
+*.pyc
+Qwen2-VL-Source/
+traffic_images/
+traffic_vlm_outputs/
