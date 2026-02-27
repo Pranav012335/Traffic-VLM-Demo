@@ -31,6 +31,13 @@ def process_images(model, processor, images_dir):
 
     for image_file in image_files:
         image_path = os.path.join(images_dir, image_file)
+        
+        txt_filename = os.path.splitext(image_file)[0] + ".txt"
+        txt_filepath = os.path.join(output_dir, txt_filename)
+        if os.path.exists(txt_filepath):
+            print(f"Skipping {image_file}, already processed.")
+            continue
+
         print(f"\n--- Processing {image_file} ---")
         
         try:
@@ -84,6 +91,13 @@ def process_images(model, processor, images_dir):
             with open(txt_filepath, "w", encoding="utf-8") as f:
                 f.write(output_text[0])
             print(f"Saved description to: {txt_filepath}")
+            
+            # Move the processed image to a completed folder
+            import shutil
+            completed_dir = os.path.join(os.path.dirname(images_dir), "completed_images")
+            os.makedirs(completed_dir, exist_ok=True)
+            shutil.move(image_path, os.path.join(completed_dir, image_file))
+            print(f"Moved `{image_file}` to: {completed_dir}")
             
         except Exception as e:
             print(f"Error processing {image_file}: {e}")
